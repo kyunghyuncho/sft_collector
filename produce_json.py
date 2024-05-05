@@ -15,7 +15,8 @@ def select_data(dataset_name, table_name, sqlite_file, json_file):
     conn.close()
 
     # Convert the data to a list of dictionaries
-    input_output_pairs = [{'input': row[0], 'output': row[1]} for row in data]
+    input_output_pairs = [{'instruction': 'Answer the question.',
+                           'input': row[0], 'output': row[1]} for row in data]
 
     # Write the data to a JSON file
     with open(json_file, 'w') as f:
