@@ -74,18 +74,64 @@ function deleteExample(exampleId) {
 function validateForm() {
   const datasetSelect = document.getElementById('dataset_name_select');
   const newDatasetInput = document.getElementById('new_dataset_name');
+  const inputData = document.getElementById('input_data').value.trim();
+  const outputData = document.getElementById('output_data').value.trim();
   let datasetName = '';
 
+  // Determine dataset name based on selection
   if (datasetSelect.value === 'new') {
     datasetName = newDatasetInput.value.trim();
   } else {
     datasetName = datasetSelect.value;
   }
 
+  // Validate dataset name
   if (!datasetName) {
     alert('Please provide a valid dataset name.');
     return false; // Prevent form submission
   }
 
+  // Validate input data
+  if (!inputData) {
+    alert('Input data cannot be empty.');
+    return false; // Prevent form submission
+  }
+
+  // Validate output data
+  if (!outputData) {
+    alert('Output data cannot be empty.');
+    return false; // Prevent form submission
+  }
+
   return true; // Allow form submission
+}
+
+function askLanguageModel() {
+  const inputData = document.getElementById('input_data').value.trim();
+  const spinner = document.getElementById('spinner');
+
+  if (!inputData) {
+    alert("Input data cannot be empty.");
+    return;
+  }
+
+  // Show the spinner
+  spinner.style.display = 'inline-block';
+
+  fetch('/ask_language_model', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ input_data: inputData })
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Hide the spinner
+    spinner.style.display = 'none';
+    document.getElementById('output_data').value = data.answer;
+  })
+  .catch(error => {
+    // Hide the spinner and show an error message
+    spinner.style.display = 'none';
+    alert("Error: " + error.message);
+  });
 }

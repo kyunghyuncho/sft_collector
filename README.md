@@ -26,20 +26,22 @@ A Python web application for dataset collection using Flask, SQLite, and Gunicor
 
    pip install -r requirements.txt
 
+5. Download a small language model of your choice for "Ask a language model":
+
+   litgpt download --repo_id "microsoft/phi-1_5"
+
 ## Usage
-
-### Database Setup
-
-If your application uses tables that need to be set up, ensure the database is created before running.
 
 ### Run the Application
 
-Start the application server using Gunicorn:
+Start the application server using Flask local server:
 
-   gunicorn -w 4 -b 0.0.0.0:8000 sft_collector:app
+   python sft_collector:app
 
 - sft_collector is the name of your Python script (without the .py extension).
 - app is the name of the Flask app instance inside sft_collector.py.
+- Somehow I cannot get lit-gpt work with gunicorn.
+- Put `PYTORCH_ENABLE_MPS_FALLBACK=1` in front, if you are running it on Mac with Apple silicon.
 
 ## Using the collected dataset
 
@@ -50,10 +52,6 @@ This repository comes with a script that returns a json file.
     python produce_json.py --dataset_name YOUR_DATASET_NAME --sqlie_file datasets.db --json_file YOUR_DATASET_NAME.json
 
 ### Use it with LitGPT
-
-Install litgpt as an example:
-
-    pip install litgpt
 
 Finetune your favourite model with the collected dataset:
 

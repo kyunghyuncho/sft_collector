@@ -1,3 +1,6 @@
+from litgpt_wrapper import load_model, generate_candidate, promptify
+from pathlib import Path
+
 from flask import Flask, request, render_template, redirect, url_for, jsonify
 import sqlite3
 
@@ -5,6 +8,9 @@ app = Flask(__name__)
 
 # Database configuration
 DATABASE = 'datasets.db'
+
+# load the model
+fabric, model, tokenizer = load_model(Path('./checkpoints/microsoft/phi-1_5'), 1024)
 
 def get_connection():
     """Helper function to connect to the SQLite database."""
@@ -119,5 +125,26 @@ def delete_example():
         conn.commit()
     return jsonify({'success': True})
 
+@app.route('/ask_language_model', methods=['POST'])
+def ask_language_model():
+    """Generate an answer using lit-gpt given input_data."""
+    data = request.get_json()
+    if 'input_data' not in data:
+        return jsonify({'error': 'Missing input_data field in the request.'})
+
+    # Initialize or load your lit-gpt model here and generate a response
+    # For simplicity, assume `generate_answer` is a custom function that processes the input
+    answer = generate_answer(data['input_data'])
+
+    return jsonify({'answer': answer})
+
+def generate_answer(question):
+    response = generate_candidate(fabric, model, tokenizer, 
+                                  "Answer this question as concisely as possible. "
+                                  + "Terminate after answering this question immediately.", 
+                                  question)
+    return response
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
+
