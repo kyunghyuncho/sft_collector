@@ -41,7 +41,20 @@ Start the application server using Gunicorn:
 - sft_collector is the name of your Python script (without the .py extension).
 - app is the name of the Flask app instance inside sft_collector.py.
 
-### Troubleshooting
+## Using the collected dataset
 
-- **ModuleNotFoundError**: Ensure the virtual environment is activated and packages are correctly installed.
-- **Address Already in Use**: Try changing the port to a different number (e.g., 8001) if the default port is taken.
+### Convert it to .json file
+
+This repository comes with a script that returns a json file.
+
+    python produce_json.py --dataset_name YOUR_DATASET_NAME --sqlie_file datasets.db --json_file YOUR_DATASET_NAME.json
+
+### Use it with LitGPT
+
+Install litgpt as an example:
+
+    pip install litgpt
+
+Finetune your favourite model with the collected dataset:
+
+    litgpt finetune lora --checkpoint_dir ./checkpoints/microsoft/phi-1_5 --data JSON --data.json_path ./YOUR_DATASET_NAME.json --data.val_split_fraction 0.1 --out_dir out/my_model/
