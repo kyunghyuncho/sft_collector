@@ -56,6 +56,9 @@ def submit():
     # Determine the final dataset name
     dataset_name = new_dataset_name if dataset_name_select == 'new' else dataset_name_select
 
+    if not dataset_name:  # Handle empty dataset names
+        return redirect(url_for('home', success_message='Error: Dataset name cannot be empty.'))
+
     # Insert data into the SQLite database
     with get_connection() as conn:
         cursor = conn.cursor()
@@ -69,7 +72,7 @@ def submit():
     success_message = f'Successfully added dataset "{dataset_name}".'
     return redirect(url_for('home', success_message=success_message, selected_dataset=dataset_name))
 
-@app.route('/examples/<string:dataset_name>')
+@app.route('/examples/<dataset_name>')
 def view_examples(dataset_name):
     """Display paginated examples for a particular dataset."""
     page = int(request.args.get('page', 1))

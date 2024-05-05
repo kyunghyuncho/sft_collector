@@ -70,3 +70,22 @@ function deleteExample(exampleId) {
     }
   });
 }
+
+function validateForm() {
+  const datasetSelect = document.getElementById('dataset_name_select');
+  const newDatasetInput = document.getElementById('new_dataset_name');
+  let datasetName = '';
+
+  if (datasetSelect.value === 'new') {
+    datasetName = newDatasetInput.value.trim();
+  } else {
+    datasetName = datasetSelect.value;
+  }
+
+  if (!datasetName) {
+    alert('Please provide a valid dataset name.');
+    return false; // Prevent form submission
+  }
+
+  return true; // Allow form submission
+}

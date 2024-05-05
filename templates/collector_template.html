@@ -10,7 +10,7 @@
   {% if success_message %}
     <p style="color:green;"><strong>{{ success_message }}</strong></p>
   {% endif %}
-  <form action="/submit" method="POST">
+  <form action="/submit" method="POST" onsubmit="return validateForm();">
     <label for="dataset_name">Dataset Name:</label><br>
     <select id="dataset_name_select" name="dataset_name_select" onchange="onDatasetSelectChange(this)">
       <option value="" disabled {% if not selected_dataset %} selected {% endif %}>Select a dataset name</option>
