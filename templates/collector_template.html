@@ -30,14 +30,12 @@
     <textarea id="output_data" name="output_data" rows="4" cols="50"></textarea><br><br>
     <input type="submit" value="Submit">
   </form>
-  <div id="samples"></div>
 
-  <script>
-    // If a dataset is already selected, fetch its samples on page load
-    const selectedDataset = "{{ selected_dataset }}";
-    if (selectedDataset && selectedDataset !== "new") {
-      fetchSamples(selectedDataset, 1);
-    }
-  </script>
+  <h3>View Examples:</h3>
+  <ul>
+    {% for name in dataset_names %}
+      <li><a href="{{ url_for('view_examples', dataset_name=name) }}">{{ name }}</a></li>
+    {% endfor %}
+  </ul>
 </body>
 </html>

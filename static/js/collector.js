@@ -1,3 +1,5 @@
+// Collector JS Logic
+
 let currentPage = 1;
 const perPage = 5;
 
@@ -51,4 +53,20 @@ function onDatasetSelectChange(selectElement) {
   } else {
     document.getElementById('samples').innerHTML = '';
   }
+}
+
+function deleteExample(exampleId) {
+  fetch('/delete_example', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `id=${exampleId}`
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById(`example-${exampleId}`).remove();
+    } else {
+      alert("Failed to delete the example.");
+    }
+  });
 }
