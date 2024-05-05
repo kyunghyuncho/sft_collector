@@ -1,6 +1,6 @@
 # SFT Collector Project
 
-A Python web application for dataset collection using Flask, SQLite, and Gunicorn.
+A Python web application for dataset collection using Flask, SQLite, and Gunicorn. This project was created largely thanks to ChatGPT 4. See https://chat.openai.com/share/1d54fad4-a65d-4442-85b6-0e4e98cd9f4f for the conversation that led to this project.
 
 ## Prerequisites
 
