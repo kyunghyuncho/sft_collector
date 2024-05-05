@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dataset Input Form</title>
+  <script src="{{ url_for('static', filename='js/collector.js') }}"></script>
+</head>
+<body>
+  <h2>Dataset Information Form</h2>
+  {% if success_message %}
+    <p style="color:green;"><strong>{{ success_message }}</strong></p>
+  {% endif %}
+  <form action="/submit" method="POST">
+    <label for="dataset_name">Dataset Name:</label><br>
+    <select id="dataset_name_select" name="dataset_name_select" onchange="onDatasetSelectChange(this)">
+      <option value="" disabled {% if not selected_dataset %} selected {% endif %}>Select a dataset name</option>
+      {% for name in dataset_names %}
+        <option value="{{ name }}" {% if name == selected_dataset %} selected {% endif %}>{{ name }}</option>
+      {% endfor %}
+      <option value="new" {% if selected_dataset == 'new' %} selected {% endif %}>New Dataset</option>
+    </select>
+    <br><br>
+    <div id="new_dataset_input" style="display: {% if selected_dataset == 'new' %}block{% else %}none{% endif %};">
+      <label for="new_dataset_name">New Dataset Name:</label><br>
+      <input type="text" id="new_dataset_name" name="new_dataset_name"><br><br>
+    </div>
+    <label for="input_data">Input:</label><br>
+    <textarea id="input_data" name="input_data" rows="4" cols="50"></textarea><br><br>
+    <label for="output_data">Output:</label><br>
+    <textarea id="output_data" name="output_data" rows="4" cols="50"></textarea><br><br>
+    <input type="submit" value="Submit">
+  </form>
+  <div id="samples"></div>
+
+  <script>
+    // If a dataset is already selected, fetch its samples on page load
+    const selectedDataset = "{{ selected_dataset }}";
+    if (selectedDataset && selectedDataset !== "new") {
+      fetchSamples(selectedDataset, 1);
+    }
+  </script>
+</body>
+</html>
