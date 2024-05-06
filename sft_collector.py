@@ -78,32 +78,38 @@ def submit():
     success_message = f'Successfully added dataset "{dataset_name}".'
     return redirect(url_for('home', success_message=success_message, selected_dataset=dataset_name))
 
-@app.route('/examples/<dataset_name>')
+@app.route('/examples/<string:dataset_name>')
 def view_examples(dataset_name):
-    """Display paginated examples for a particular dataset."""
+    """Display paginated examples for a particular dataset, optionally filtered by a search query."""
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 5))
     offset = (page - 1) * per_page
+    search_query = request.args.get('search', '').strip()
+
+    # Create SQL query condition for search
+    search_condition = '%' + search_query + '%' if search_query else '%'
 
     conn = get_connection()
     cursor = conn.cursor()
 
-    # Fetch the required page of examples
+    # Fetch examples with filtering and pagination
     cursor.execute('''
         SELECT id, input_data, output_data
         FROM datasets
-        WHERE dataset_name = ?
+        WHERE dataset_name = ? AND (input_data LIKE ? OR output_data LIKE ?)
         ORDER BY id DESC
         LIMIT ? OFFSET ?
-    ''', (dataset_name, per_page, offset))
+    ''', (dataset_name, search_condition, search_condition, per_page, offset))
     examples = cursor.fetchall()
 
-    # Calculate the total number of examples for this dataset
+    # Calculate total pages needed for the current search condition
     cursor.execute('''
-        SELECT COUNT(*) AS total FROM datasets WHERE dataset_name = ?
-    ''', (dataset_name,))
+        SELECT COUNT(*) AS total
+        FROM datasets
+        WHERE dataset_name = ? AND (input_data LIKE ? OR output_data LIKE ?)
+    ''', (dataset_name, search_condition, search_condition))
     total_examples = cursor.fetchone()['total']
-    total_pages = (total_examples + per_page - 1) // per_page  # Calculate total pages needed
+    total_pages = (total_examples + per_page - 1) // per_page
 
     conn.close()
 
@@ -112,7 +118,8 @@ def view_examples(dataset_name):
         dataset_name=dataset_name,
         examples=examples,
         current_page=page,
-        total_pages=total_pages
+        total_pages=total_pages,
+        search_query=search_query
     )
 
 @app.route('/delete_example', methods=['POST'])
@@ -146,5 +153,5 @@ def generate_answer(question):
     return response
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, port=8000)
 

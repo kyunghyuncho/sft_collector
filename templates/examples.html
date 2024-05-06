@@ -42,12 +42,22 @@
     .pagination a {
       margin: 5px;
     }
-
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Examples for Dataset: <span class="text-primary">{{ dataset_name }}</span></h2>
+
+    <!-- Search form -->
+    <form action="{{ url_for('view_examples', dataset_name=dataset_name) }}" method="GET">
+      <input type="hidden" name="page" value="1">
+      <div class="form-group">
+        <label for="search">Search:</label>
+        <input type="text" id="search" name="search" value="{{ search_query }}" class="form-control">
+      </div>
+      <input type="submit" value="Search" class="btn btn-primary">
+    </form>
+    
     <ul class="list-unstyled">
       {% for example in examples %}
         <li id="example-{{ example.id }}" class="example">
@@ -62,11 +72,11 @@
 
     <div class="pagination">
       {% if current_page > 1 %}
-        <a href="{{ url_for('view_examples', dataset_name=dataset_name, page=current_page - 1) }}" class="btn btn-secondary">Previous</a>
+        <a href="{{ url_for('view_examples', dataset_name=dataset_name, page=current_page - 1, search=search_query) }}" class="btn btn-secondary">Previous</a>
       {% endif %}
 
       {% if current_page < total_pages %}
-        <a href="{{ url_for('view_examples', dataset_name=dataset_name, page=current_page + 1) }}" class="btn btn-secondary">Next</a>
+        <a href="{{ url_for('view_examples', dataset_name=dataset_name, page=current_page + 1, search=search_query) }}" class="btn btn-secondary">Next</a>
       {% endif %}
     </div>
 
