@@ -135,3 +135,23 @@ function askLanguageModel() {
     alert("Error: " + error.message);
   });
 }
+
+function previewImage() {
+  const file = document.getElementById('image_upload').files[0];
+  const reader = new FileReader();
+  
+  reader.onload = function(e) {
+      const imgElement = document.createElement('img');
+      imgElement.src = e.target.result;
+      imgElement.style.maxWidth = '200px'; // Set a maximum width
+      imgElement.style.maxHeight = '200px'; // Set a maximum height
+      document.getElementById('image_preview').innerHTML = ''; // Clear any existing images
+      document.getElementById('image_preview').appendChild(imgElement);
+  };
+
+  if (file) {
+      reader.readAsDataURL(file);
+  }
+}
+
+document.getElementById('image_upload').addEventListener('change', previewImage);

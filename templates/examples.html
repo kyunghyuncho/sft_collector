@@ -63,6 +63,9 @@
         <li id="example-{{ example.id }}" class="example">
           <h5><strong>Input:</strong></h5> 
           <p>{{ example.input_data }}</p>
+          {% if example.image_path %}
+            <img src="{{ url_for('static', filename='uploads/' + example.image_path) }}" alt="Uploaded Image" style="max-width: 100%; height: auto;">
+          {% endif %}
           <h5><strong>Output:</strong></h5> 
           <p>{{ example.output_data }}</p>
           <button class="btn btn-danger" onclick="deleteExample({{ example.id }})">Delete</button>

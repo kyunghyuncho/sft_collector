@@ -45,7 +45,7 @@
     {% if success_message %}
       <div class="alert alert-success"><strong>{{ success_message }}</strong></div>
     {% endif %}
-    <form action="/submit" method="POST" onsubmit="return validateForm();">
+    <form action="/submit" method="POST" enctype="multipart/form-data" onsubmit="return validateForm();">
       <div class="form-group">
         <label for="dataset_name_select">Dataset Name:</label>
         <select id="dataset_name_select" name="dataset_name_select" class="form-control" onchange="onDatasetSelectChange(this)">
@@ -67,6 +67,17 @@
         <textarea id="input_data" name="input_data" class="form-control" rows="4"></textarea>
       </div>
 
+      <div id="image_preview"></div>
+
+      <div class="form-group">
+        <label for="image_upload">Upload Image (optional):</label>
+        <input type="file" id="image_upload" name="image_upload" class="form-control-file">
+      </div>    
+
+      <div class="alert alert-info" style="margin-top: 20px; margin-bottom: 20px;">
+        Note: The "Ask a language model" feature will only process text. Any uploaded images will not be considered in the response.
+      </div>
+    
       <button type="button" class="btn btn-primary" onclick="askLanguageModel()">Ask a language model</button>
       <div id="spinner" class="spinner mt-3"></div>
 

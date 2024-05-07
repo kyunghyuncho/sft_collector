@@ -2,9 +2,12 @@ from litgpt_wrapper import load_model, generate_candidate, promptify
 from pathlib import Path
 
 from flask import Flask, request, render_template, redirect, url_for, jsonify
+from werkzeug.utils import secure_filename
+import os
 import sqlite3
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 
 # Database configuration
 DATABASE = 'datasets.db'
@@ -25,10 +28,11 @@ def init_db():
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS datasets (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                dataset_name TEXT,
-                input_data TEXT,
-                output_data TEXT
-            )
+                dataset_name TEXT NOT NULL,
+                input_data TEXT NOT NULL,
+                output_data TEXT NOT NULL,
+                image_path TEXT
+            );
         ''')
         conn.commit()
 
@@ -58,6 +62,13 @@ def submit():
     new_dataset_name = request.form.get('new_dataset_name')
     input_data = request.form.get('input_data')
     output_data = request.form.get('output_data')
+    file = request.files['image_upload']
+
+    filename = None
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
 
     # Determine the final dataset name
     dataset_name = new_dataset_name if dataset_name_select == 'new' else dataset_name_select
@@ -68,10 +79,8 @@ def submit():
     # Insert data into the SQLite database
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO datasets (dataset_name, input_data, output_data)
-            VALUES (?, ?, ?)
-        ''', (dataset_name, input_data, output_data))
+        cursor.execute('INSERT INTO datasets (dataset_name, input_data, output_data, image_path) VALUES (?, ?, ?, ?)',
+                       (dataset_name, input_data, output_data, filename))
         conn.commit()
 
     # Redirect back to the form page with the selected dataset name
@@ -94,7 +103,7 @@ def view_examples(dataset_name):
 
     # Fetch examples with filtering and pagination
     cursor.execute('''
-        SELECT id, input_data, output_data
+        SELECT id, input_data, output_data, image_path
         FROM datasets
         WHERE dataset_name = ? AND (input_data LIKE ? OR output_data LIKE ?)
         ORDER BY id DESC
@@ -151,6 +160,11 @@ def generate_answer(question):
                                   + "Terminate after answering this question immediately.", 
                                   question)
     return response
+
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg', 'gif'}
+
 
 if __name__ == '__main__':
     app.run(debug=False, port=8000)
