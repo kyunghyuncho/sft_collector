@@ -9,6 +9,9 @@ import sqlite3
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 
+# create the upload folder if it doesn't exist
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 # Database configuration
 DATABASE = 'datasets.db'
 
